@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuickBite - Food Order System</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: #fff;
+      background:
+        linear-gradient(rgba(5, 8, 20, 0.88), rgba(5, 8, 20, 0.9)),
+        url("https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1150px;
+      margin: 35px auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .logo {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff4d4d, #ffb347);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      box-shadow: 0 0 25px rgba(255, 120, 50, 0.6);
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 44px;
+      letter-spacing: 1px;
+    }
+
+    .header span {
+      color: #ffb347;
+    }
+
+    .header p {
+      color: #ddd;
+      margin-top: 8px;
+      font-size: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+    }
+
+    .card {
+      background: rgba(15, 20, 35, 0.92);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 22px;
+      padding: 25px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.45);
+      backdrop-filter: blur(10px);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: #ffb347;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: bold;
+      color: #f1f1f1;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      font-size: 15px;
+      color: #fff;
+      background: rgba(255,255,255,0.08);
+      outline: none;
+    }
+
+    input::placeholder {
+      color: #aaa;
+    }
+
+    select option {
+      color: #000;
+    }
+
+    .price-box {
+      background: rgba(255, 179, 71, 0.14);
+      border: 1px solid rgba(255, 179, 71, 0.35);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 16px;
+      color: #ffcc80;
+      font-weight: bold;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(90deg, #ff4d4d, #ffb347);
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 100, 50, 0.45);
+    }
+
+    .message {
+      display: none;
+      margin-bottom: 15px;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .success {
+      background: rgba(40, 167, 69, 0.2);
+      color: #8df5a6;
+      border: 1px solid #28a745;
+    }
+
+    .error {
+      background: rgba(220, 53, 69, 0.2);
+      color: #ff9aa5;
+      border: 1px solid #dc3545;
+    }
+
+    .order-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 520px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .order-item {
+      background: linear-gradient(135deg, rgba(255,77,77,0.15), rgba(255,179,71,0.12));
+      border-left: 5px solid #ffb347;
+      padding: 15px;
+      border-radius: 14px;
+    }
+
+    .order-item h4 {
+      margin: 0 0 8px;
+      color: #ffb347;
+      font-size: 18px;
+    }
+
+    .order-item p {
+      margin: 5px 0;
+      color: #eee;
+    }
+
+    .food-menu {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .food-card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 12px;
+      border-radius: 14px;
+      font-size: 14px;
+    }
+
+    .food-card strong {
+      color: #ffb347;
+    }
+
+    @media (max-width: 850px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .food-menu {
+        grid-template-columns: 1fr;
+      }
+
+      .header h1 {
+        font-size: 36px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">🍔</div>
+      <h1>Quick<span>Bite</span></h1>
+      <p>Fast, fresh and easy food ordering system</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>🍽️ Place New Order</h2>
+
+        <div class="food-menu">
+          <div class="food-card"><strong>Burger</strong><br>Rs 300</div>
+          <div class="food-card"><strong>Pizza</strong><br>Rs 800</div>
+          <div class="food-card"><strong>Shawarma</strong><br>Rs 250</div>
+          <div class="food-card"><strong>Biryani</strong><br>Rs 500</div>
+          <div class="food-card"><strong>Fries</strong><br>Rs 200</div>
+          <div class="food-card"><strong>Cold Drink</strong><br>Rs 120</div>
+        </div>
+
+        <div id="messageBox" class="message"></div>
+
+        <div class="form-group">
+          <label for="name">Customer Name</label>
+          <input id="name" type="text" placeholder="Enter your name" />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input id="phone" type="text" placeholder="Enter your phone number" />
+        </div>
+
+        <div class="form-group">
+          <label for="food">Select Food</label>
+          <select id="food" onchange="updatePrice()">
+            <option value="Burger" data-price="300">Burger - Rs 300</option>
+            <option value="Pizza" data-price="800">Pizza - Rs 800</option>
+            <option value="Shawarma" data-price="250">Shawarma - Rs 250</option>
+            <option value="Biryani" data-price="500">Biryani - Rs 500</option>
+            <option value="Pulao" data-price="450">Pulao - Rs 450</option>
+            <option value="Fries" data-price="200">Fries - Rs 200</option>
+            <option value="Nuggets" data-price="350">Nuggets - Rs 350</option>
+            <option value="Cold Drink" data-price="120">Cold Drink - Rs 120</option>
+            <option value="Juice" data-price="180">Juice - Rs 180</option>
+            <option value="Ice Cream" data-price="150">Ice Cream - Rs 150</option>
+          </select>
+        </div>
+
+        <div id="priceBox" class="price-box">Selected Item Price: Rs 300</div>
+
+        <div class="form-group">
+          <label for="qty">Quantity</label>
+          <input id="qty" type="number" min="1" placeholder="Enter quantity" oninput="updatePrice()" />
+        </div>
+
+        <div id="totalBox" class="price-box">Total: Rs 300</div>
+
+        <button onclick="placeOrder()">Place Order</button>
+      </div>
+
+      <div class="card">
+        <h2>🧾 Recent Orders</h2>
+        <div id="orders" class="order-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showMessage(text, type) {
+      const box = document.getElementById("messageBox");
+      box.style.display = "block";
+      box.className = "message " + type;
+      box.textContent = text;
+    }
+
+    function updatePrice() {
+      const foodSelect = document.getElementById("food");
+      const selectedOption = foodSelect.options[foodSelect.selectedIndex];
+      const price = parseInt(selectedOption.getAttribute("data-price"));
+      const quantity = parseInt(document.getElementById("qty").value) || 1;
+
+      document.getElementById("priceBox").textContent = "Selected Item Price: Rs " + price;
+      document.getElementById("totalBox").textContent = "Total: Rs " + (price * quantity);
+    }
+
+    async function placeOrder() {
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const food = document.getElementById("food").value;
+      const quantity = parseInt(document.getElementById("qty").value);
+
+      if (!name || !phone || !quantity || quantity < 1) {
+        showMessage("Please fill all fields correctly.", "error");
+        return;
+      }
+
+      try {
+        const res = await fetch("/place-order", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ name, phone, food, quantity })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          showMessage(`${data.message} | Total: Rs ${data.total}`, "success");
+          document.getElementById("name").value = "";
+          document.getElementById("phone").value = "";
+          document.getElementById("qty").value = "";
+          updatePrice();
+          loadOrders();
+        } else {
+          showMessage(data.message || "Order could not be placed.", "error");
+        }
+      } catch (error) {
+        showMessage("Server error. Please try again.", "error");
+      }
+    }
+
+    async function loadOrders() {
+      try {
+        const res = await fetch("/orders");
+        const orders = await res.json();
+
+        let output = "";
+
+        if (!orders.length) {
+          output = "<p>No orders found yet.</p>";
+        } else {
+          orders.forEach(o => {
+            output += `
+              <div class="order-item">
+                <h4>${o.name}</h4>
+                <p><strong>Phone:</strong> ${o.phone}</p>
+                <p><strong>Food:</strong> ${o.food}</p>
+                <p><strong>Quantity:</strong> ${o.quantity}</p>
+                <p><strong>Total Price:</strong> Rs ${o.total_price}</p>
+              </div>
+            `;
+          });
+        }
+
+        document.getElementById("orders").innerHTML = output;
+      } catch (error) {
+        document.getElementById("orders").innerHTML = "<p>Could not load orders.</p>";
+      }
+    }
+
+    updatePrice();
+    loadOrders();
+  </script>
+</body>
+</html>
