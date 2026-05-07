@@ -1,0 +1,174 @@
+const express = require("express");
+const sql = require("mssql");
+const cors = require("cors");
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+app.use(express.static(__dirname));
+
+const config = {
+    user: "sa",
+    password: "1234",
+    server: "localhost",
+    port: 1433,
+    database: "food_order_db",
+    options: {
+        encrypt: false,
+        trustServerCertificate: true
+    }
+};
+
+let pool;
+
+async function connectDb() {
+    try {
+        pool = await sql.connect(config);
+        console.log("✅ Connected to SQL Server");
+    } catch (err) {
+        console.error("❌ DB Connection Error:");
+        console.error(err);
+    }
+}
+
+app.post("/place-order", async (req, res) => {
+    try {
+        if (!pool) {
+            return res.status(500).json({ message: "Database not connected" });
+        }
+
+        const { name, phone, food, quantity } = req.body;
+
+        if (!name || !phone || !food || !quantity) {
+            return res.status(400).json({ message: "All fields required" });
+        }
+
+        let customerResult = await pool.request()
+            .input("name", sql.VarChar(100), name)
+            .query(`
+                SELECT customer_id
+                FROM customers
+                WHERE customer_name = @name
+            `);
+
+        let customerId;
+
+        if (customerResult.recordset.length > 0) {
+            customerId = customerResult.recordset[0].customer_id;
+        } else {
+            let newCustomer = await pool.request()
+                .input("name", sql.VarChar(100), name)
+                .query(`
+                    INSERT INTO customers (customer_name)
+                    OUTPUT INSERTED.customer_id
+                    VALUES (@name)
+                `);
+
+            customerId = newCustomer.recordset[0].customer_id;
+
+            await pool.request()
+                .input("customer_id", sql.Int, customerId)
+                .input("phone", sql.VarChar(20), phone)
+                .input("email", sql.VarChar(100), name.toLowerCase().replaceAll(" ", "") + "@gmail.com")
+                .query(`
+                    INSERT INTO customer_contacts (customer_id, phone, email)
+                    VALUES (@customer_id, @phone, @email)
+                `);
+        }
+
+        let foodResult = await pool.request()
+            .input("food", sql.VarChar(100), food)
+            .query(`
+                SELECT food_id, price
+                FROM food_items
+                WHERE food_name = @food
+            `);
+
+        if (foodResult.recordset.length === 0) {
+            return res.status(404).json({ message: "Food not found" });
+        }
+
+        const foodId = foodResult.recordset[0].food_id;
+        const price = foodResult.recordset[0].price;
+        const qty = parseInt(quantity);
+        const total = price * qty;
+
+        let orderResult = await pool.request()
+            .input("customer_id", sql.Int, customerId)
+            .query(`
+                INSERT INTO orders (customer_id)
+                OUTPUT INSERTED.order_id
+                VALUES (@customer_id)
+            `);
+
+        const orderId = orderResult.recordset[0].order_id;
+
+        await pool.request()
+            .input("order_id", sql.Int, orderId)
+            .input("food_id", sql.Int, foodId)
+            .input("quantity", sql.Int, qty)
+            .input("total_price", sql.Int, total)
+            .query(`
+                INSERT INTO order_details (order_id, food_id, quantity, total_price)
+                VALUES (@order_id, @food_id, @quantity, @total_price)
+            `);
+
+        await pool.request()
+            .input("order_id", sql.Int, orderId)
+            .query(`
+                INSERT INTO payments (order_id, payment_method, payment_status)
+                VALUES (@order_id, 'Cash', 'Paid')
+            `);
+
+        res.json({
+            message: "Order placed successfully",
+            total: total
+        });
+
+    } catch (err) {
+        console.error("❌ Order Error:");
+        console.error(err);
+        res.status(500).json({ message: "Error placing order" });
+    }
+});
+
+app.get("/orders", async (req, res) => {
+    try {
+        if (!pool) {
+            return res.status(500).json({ message: "Database not connected" });
+        }
+
+        const result = await pool.request().query(`
+            SELECT
+                customers.customer_name AS name,
+                customer_contacts.phone,
+                food_items.food_name AS food,
+                order_details.quantity,
+                order_details.total_price,
+                orders.order_date
+            FROM orders
+            JOIN customers
+                ON customers.customer_id = orders.customer_id
+            JOIN customer_contacts
+                ON customer_contacts.customer_id = customers.customer_id
+            JOIN order_details
+                ON order_details.order_id = orders.order_id
+            JOIN food_items
+                ON food_items.food_id = order_details.food_id
+            ORDER BY orders.order_id DESC
+        `);
+
+        res.json(result.recordset);
+
+    } catch (err) {
+        console.error("❌ Fetch Error:");
+        console.error(err);
+        res.status(500).json({ message: "Error fetching orders" });
+    }
+});
+
+app.listen(3000, async () => {
+    console.log("🚀 Server running on http://localhost:3000");
+    await connectDb();
+});
