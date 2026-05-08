@@ -1,0 +1,223 @@
+USE master;
+GO
+
+DROP DATABASE IF EXISTS food_order_db;
+GO
+
+
+
+CREATE DATABASE food_order_db;
+GO
+
+USE food_order_db;
+GO
+
+CREATE TABLE customers (
+    customer_id INT IDENTITY(1,1) PRIMARY KEY,
+    customer_name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE customer_contacts (
+    contact_id INT IDENTITY(1,1) PRIMARY KEY,
+    customer_id INT NOT NULL,
+    phone VARCHAR(20),
+    email VARCHAR(100),
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+
+CREATE TABLE food_categories (
+    category_id INT IDENTITY(1,1) PRIMARY KEY,
+    category_name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE food_items (
+    food_id INT IDENTITY(1,1) PRIMARY KEY,
+    category_id INT NOT NULL,
+    food_name VARCHAR(100) NOT NULL,
+    price INT NOT NULL,
+    description VARCHAR(255),
+    FOREIGN KEY (category_id) REFERENCES food_categories(category_id)
+);
+
+CREATE TABLE orders (
+    order_id INT IDENTITY(1,1) PRIMARY KEY,
+    customer_id INT NOT NULL,
+    order_date DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+
+CREATE TABLE order_details (
+    detail_id INT IDENTITY(1,1) PRIMARY KEY,
+    order_id INT NOT NULL,
+    food_id INT NOT NULL,
+    quantity INT NOT NULL,
+    total_price INT NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (food_id) REFERENCES food_items(food_id)
+);
+
+CREATE TABLE payments (
+    payment_id INT IDENTITY(1,1) PRIMARY KEY,
+    order_id INT NOT NULL,
+    payment_method VARCHAR(50),
+    payment_status VARCHAR(50),
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+);
+
+INSERT INTO food_categories (category_name) VALUES
+('Fast Food'),
+('Rice'),
+('Snacks'),
+('Drinks'),
+('Dessert');
+
+INSERT INTO food_items (category_id, food_name, price, description) VALUES
+(1, 'Burger', 300, 'Zinger burger'),
+(1, 'Pizza', 800, 'Large pizza'),
+(1, 'Shawarma', 250, 'Chicken shawarma'),
+(2, 'Biryani', 500, 'Chicken biryani'),
+(2, 'Pulao', 450, 'Chicken pulao'),
+(3, 'Fries', 200, 'Crispy fries'),
+(3, 'Nuggets', 350, 'Chicken nuggets'),
+(4, 'Cold Drink', 120, 'Chilled drink'),
+(4, 'Juice', 180, 'Fresh juice'),
+(5, 'Ice Cream', 150, 'Vanilla ice cream');
+
+INSERT INTO customers (customer_name) VALUES
+('Customer 1'),('Customer 2'),('Customer 3'),('Customer 4'),('Customer 5'),
+('Customer 6'),('Customer 7'),('Customer 8'),('Customer 9'),('Customer 10'),
+('Customer 11'),('Customer 12'),('Customer 13'),('Customer 14'),('Customer 15'),
+('Customer 16'),('Customer 17'),('Customer 18'),('Customer 19'),('Customer 20'),
+('Customer 21'),('Customer 22'),('Customer 23'),('Customer 24'),('Customer 25'),
+('Customer 26'),('Customer 27'),('Customer 28'),('Customer 29'),('Customer 30'),
+('Customer 31'),('Customer 32'),('Customer 33'),('Customer 34'),('Customer 35'),
+('Customer 36'),('Customer 37'),('Customer 38'),('Customer 39'),('Customer 40'),
+('Customer 41'),('Customer 42'),('Customer 43'),('Customer 44'),('Customer 45'),
+('Customer 46'),('Customer 47'),('Customer 48'),('Customer 49'),('Customer 50'),
+('Customer 51'),('Customer 52'),('Customer 53'),('Customer 54'),('Customer 55'),
+('Customer 56'),('Customer 57'),('Customer 58'),('Customer 59'),('Customer 60'),
+('Customer 61'),('Customer 62'),('Customer 63'),('Customer 64'),('Customer 65'),
+('Customer 66'),('Customer 67'),('Customer 68'),('Customer 69'),('Customer 70'),
+('Customer 71'),('Customer 72'),('Customer 73'),('Customer 74'),('Customer 75'),
+('Customer 76'),('Customer 77'),('Customer 78'),('Customer 79'),('Customer 80'),
+('Customer 81'),('Customer 82'),('Customer 83'),('Customer 84'),('Customer 85'),
+('Customer 86'),('Customer 87'),('Customer 88'),('Customer 89'),('Customer 90'),
+('Customer 91'),('Customer 92'),('Customer 93'),('Customer 94'),('Customer 95'),
+('Customer 96'),('Customer 97'),('Customer 98'),('Customer 99'),('Customer 100');
+
+INSERT INTO customer_contacts (customer_id, phone, email) VALUES
+(1,'03000000001','customer1@gmail.com'),(2,'03000000002','customer2@gmail.com'),
+(3,'03000000003','customer3@gmail.com'),(4,'03000000004','customer4@gmail.com'),
+(5,'03000000005','customer5@gmail.com'),(6,'03000000006','customer6@gmail.com'),
+(7,'03000000007','customer7@gmail.com'),(8,'03000000008','customer8@gmail.com'),
+(9,'03000000009','customer9@gmail.com'),(10,'03000000010','customer10@gmail.com'),
+(11,'03000000011','customer11@gmail.com'),(12,'03000000012','customer12@gmail.com'),
+(13,'03000000013','customer13@gmail.com'),(14,'03000000014','customer14@gmail.com'),
+(15,'03000000015','customer15@gmail.com'),(16,'03000000016','customer16@gmail.com'),
+(17,'03000000017','customer17@gmail.com'),(18,'03000000018','customer18@gmail.com'),
+(19,'03000000019','customer19@gmail.com'),(20,'03000000020','customer20@gmail.com'),
+(21,'03000000021','customer21@gmail.com'),(22,'03000000022','customer22@gmail.com'),
+(23,'03000000023','customer23@gmail.com'),(24,'03000000024','customer24@gmail.com'),
+(25,'03000000025','customer25@gmail.com'),(26,'03000000026','customer26@gmail.com'),
+(27,'03000000027','customer27@gmail.com'),(28,'03000000028','customer28@gmail.com'),
+(29,'03000000029','customer29@gmail.com'),(30,'03000000030','customer30@gmail.com'),
+(31,'03000000031','customer31@gmail.com'),(32,'03000000032','customer32@gmail.com'),
+(33,'03000000033','customer33@gmail.com'),(34,'03000000034','customer34@gmail.com'),
+(35,'03000000035','customer35@gmail.com'),(36,'03000000036','customer36@gmail.com'),
+(37,'03000000037','customer37@gmail.com'),(38,'03000000038','customer38@gmail.com'),
+(39,'03000000039','customer39@gmail.com'),(40,'03000000040','customer40@gmail.com'),
+(41,'03000000041','customer41@gmail.com'),(42,'03000000042','customer42@gmail.com'),
+(43,'03000000043','customer43@gmail.com'),(44,'03000000044','customer44@gmail.com'),
+(45,'03000000045','customer45@gmail.com'),(46,'03000000046','customer46@gmail.com'),
+(47,'03000000047','customer47@gmail.com'),(48,'03000000048','customer48@gmail.com'),
+(49,'03000000049','customer49@gmail.com'),(50,'03000000050','customer50@gmail.com'),
+(51,'03000000051','customer51@gmail.com'),(52,'03000000052','customer52@gmail.com'),
+(53,'03000000053','customer53@gmail.com'),(54,'03000000054','customer54@gmail.com'),
+(55,'03000000055','customer55@gmail.com'),(56,'03000000056','customer56@gmail.com'),
+(57,'03000000057','customer57@gmail.com'),(58,'03000000058','customer58@gmail.com'),
+(59,'03000000059','customer59@gmail.com'),(60,'03000000060','customer60@gmail.com'),
+(61,'03000000061','customer61@gmail.com'),(62,'03000000062','customer62@gmail.com'),
+(63,'03000000063','customer63@gmail.com'),(64,'03000000064','customer64@gmail.com'),
+(65,'03000000065','customer65@gmail.com'),(66,'03000000066','customer66@gmail.com'),
+(67,'03000000067','customer67@gmail.com'),(68,'03000000068','customer68@gmail.com'),
+(69,'03000000069','customer69@gmail.com'),(70,'03000000070','customer70@gmail.com'),
+(71,'03000000071','customer71@gmail.com'),(72,'03000000072','customer72@gmail.com'),
+(73,'03000000073','customer73@gmail.com'),(74,'03000000074','customer74@gmail.com'),
+(75,'03000000075','customer75@gmail.com'),(76,'03000000076','customer76@gmail.com'),
+(77,'03000000077','customer77@gmail.com'),(78,'03000000078','customer78@gmail.com'),
+(79,'03000000079','customer79@gmail.com'),(80,'03000000080','customer80@gmail.com'),
+(81,'03000000081','customer81@gmail.com'),(82,'03000000082','customer82@gmail.com'),
+(83,'03000000083','customer83@gmail.com'),(84,'03000000084','customer84@gmail.com'),
+(85,'03000000085','customer85@gmail.com'),(86,'03000000086','customer86@gmail.com'),
+(87,'03000000087','customer87@gmail.com'),(88,'03000000088','customer88@gmail.com'),
+(89,'03000000089','customer89@gmail.com'),(90,'03000000090','customer90@gmail.com'),
+(91,'03000000091','customer91@gmail.com'),(92,'03000000092','customer92@gmail.com'),
+(93,'03000000093','customer93@gmail.com'),(94,'03000000094','customer94@gmail.com'),
+(95,'03000000095','customer95@gmail.com'),(96,'03000000096','customer96@gmail.com'),
+(97,'03000000097','customer97@gmail.com'),(98,'03000000098','customer98@gmail.com'),
+(99,'03000000099','customer99@gmail.com'),(100,'03000000100','customer100@gmail.com');
+
+INSERT INTO orders (customer_id) VALUES
+(1),(2),(3),(4),(5),(6),(7),(8),(9),(10),
+(11),(12),(13),(14),(15),(16),(17),(18),(19),(20),
+(21),(22),(23),(24),(25),(26),(27),(28),(29),(30),
+(31),(32),(33),(34),(35),(36),(37),(38),(39),(40),
+(41),(42),(43),(44),(45),(46),(47),(48),(49),(50),
+(51),(52),(53),(54),(55),(56),(57),(58),(59),(60),
+(61),(62),(63),(64),(65),(66),(67),(68),(69),(70),
+(71),(72),(73),(74),(75),(76),(77),(78),(79),(80),
+(81),(82),(83),(84),(85),(86),(87),(88),(89),(90),
+(91),(92),(93),(94),(95),(96),(97),(98),(99),(100);
+
+INSERT INTO order_details (order_id, food_id, quantity, total_price) VALUES
+(1,1,1,300),(2,2,1,800),(3,3,2,500),(4,4,1,500),(5,5,2,900),
+(6,6,1,200),(7,7,2,700),(8,8,1,120),(9,9,2,360),(10,10,1,150),
+(11,1,2,600),(12,2,2,1600),(13,3,1,250),(14,4,2,1000),(15,5,1,450),
+(16,6,3,600),(17,7,1,350),(18,8,3,360),(19,9,1,180),(20,10,2,300),
+(21,1,1,300),(22,2,1,800),(23,3,2,500),(24,4,1,500),(25,5,2,900),
+(26,6,1,200),(27,7,2,700),(28,8,1,120),(29,9,2,360),(30,10,1,150),
+(31,1,2,600),(32,2,2,1600),(33,3,1,250),(34,4,2,1000),(35,5,1,450),
+(36,6,3,600),(37,7,1,350),(38,8,3,360),(39,9,1,180),(40,10,2,300),
+(41,1,1,300),(42,2,1,800),(43,3,2,500),(44,4,1,500),(45,5,2,900),
+(46,6,1,200),(47,7,2,700),(48,8,1,120),(49,9,2,360),(50,10,1,150),
+(51,1,2,600),(52,2,2,1600),(53,3,1,250),(54,4,2,1000),(55,5,1,450),
+(56,6,3,600),(57,7,1,350),(58,8,3,360),(59,9,1,180),(60,10,2,300),
+(61,1,1,300),(62,2,1,800),(63,3,2,500),(64,4,1,500),(65,5,2,900),
+(66,6,1,200),(67,7,2,700),(68,8,1,120),(69,9,2,360),(70,10,1,150),
+(71,1,2,600),(72,2,2,1600),(73,3,1,250),(74,4,2,1000),(75,5,1,450),
+(76,6,3,600),(77,7,1,350),(78,8,3,360),(79,9,1,180),(80,10,2,300),
+(81,1,1,300),(82,2,1,800),(83,3,2,500),(84,4,1,500),(85,5,2,900),
+(86,6,1,200),(87,7,2,700),(88,8,1,120),(89,9,2,360),(90,10,1,150),
+(91,1,2,600),(92,2,2,1600),(93,3,1,250),(94,4,2,1000),(95,5,1,450),
+(96,6,3,600),(97,7,1,350),(98,8,3,360),(99,9,1,180),(100,10,2,300);
+
+INSERT INTO payments (order_id, payment_method, payment_status) VALUES
+(1,'Cash','Paid'),(2,'Card','Paid'),(3,'Cash','Paid'),(4,'Card','Paid'),(5,'Cash','Paid'),
+(6,'Card','Paid'),(7,'Cash','Paid'),(8,'Card','Paid'),(9,'Cash','Paid'),(10,'Card','Paid'),
+(11,'Cash','Paid'),(12,'Card','Paid'),(13,'Cash','Paid'),(14,'Card','Paid'),(15,'Cash','Paid'),
+(16,'Card','Paid'),(17,'Cash','Paid'),(18,'Card','Paid'),(19,'Cash','Paid'),(20,'Card','Paid'),
+(21,'Cash','Paid'),(22,'Card','Paid'),(23,'Cash','Paid'),(24,'Card','Paid'),(25,'Cash','Paid'),
+(26,'Card','Paid'),(27,'Cash','Paid'),(28,'Card','Paid'),(29,'Cash','Paid'),(30,'Card','Paid'),
+(31,'Cash','Paid'),(32,'Card','Paid'),(33,'Cash','Paid'),(34,'Card','Paid'),(35,'Cash','Paid'),
+(36,'Card','Paid'),(37,'Cash','Paid'),(38,'Card','Paid'),(39,'Cash','Paid'),(40,'Card','Paid'),
+(41,'Cash','Paid'),(42,'Card','Paid'),(43,'Cash','Paid'),(44,'Card','Paid'),(45,'Cash','Paid'),
+(46,'Card','Paid'),(47,'Cash','Paid'),(48,'Card','Paid'),(49,'Cash','Paid'),(50,'Card','Paid'),
+(51,'Cash','Paid'),(52,'Card','Paid'),(53,'Cash','Paid'),(54,'Card','Paid'),(55,'Cash','Paid'),
+(56,'Card','Paid'),(57,'Cash','Paid'),(58,'Card','Paid'),(59,'Cash','Paid'),(60,'Card','Paid'),
+(61,'Cash','Paid'),(62,'Card','Paid'),(63,'Cash','Paid'),(64,'Card','Paid'),(65,'Cash','Paid'),
+(66,'Card','Paid'),(67,'Cash','Paid'),(68,'Card','Paid'),(69,'Cash','Paid'),(70,'Card','Paid'),
+(71,'Cash','Paid'),(72,'Card','Paid'),(73,'Cash','Paid'),(74,'Card','Paid'),(75,'Cash','Paid'),
+(76,'Card','Paid'),(77,'Cash','Paid'),(78,'Card','Paid'),(79,'Cash','Paid'),(80,'Card','Paid'),
+(81,'Cash','Paid'),(82,'Card','Paid'),(83,'Cash','Paid'),(84,'Card','Paid'),(85,'Cash','Paid'),
+(86,'Card','Paid'),(87,'Cash','Paid'),(88,'Card','Paid'),(89,'Cash','Paid'),(90,'Card','Paid'),
+(91,'Cash','Paid'),(92,'Card','Paid'),(93,'Cash','Paid'),(94,'Card','Paid'),(95,'Cash','Paid'),
+(96,'Card','Paid'),(97,'Cash','Paid'),(98,'Card','Paid'),(99,'Cash','Paid'),(100,'Card','Paid');
+
+
+SELECT * FROM customers;
+SELECT * FROM customer_contacts;
+SELECT * FROM food_categories;
+SELECT * FROM food_items;
+SELECT * FROM orders;
+SELECT * FROM order_details;
+SELECT * FROM payments;
